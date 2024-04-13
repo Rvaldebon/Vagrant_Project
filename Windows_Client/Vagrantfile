@@ -6,7 +6,7 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  config.vm.box = "gusztavvargadr/windows-10"
+  config.vm.box = "StefanScherer/windows_10"
   config.vm.provider "virtualbox" do |v|
     v.name = "Windows_Client"
   end
