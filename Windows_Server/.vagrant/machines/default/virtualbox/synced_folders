@@ -1,1 +1,1 @@
-{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/rvaldebon/Documents/Project_Vagrant/Windows","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/rvaldebon/Documents/vagrant/Vagrant_Project/Windows_Server","disabled":false,"__vagrantfile":true}}}
