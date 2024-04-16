@@ -3,7 +3,7 @@ Vagrant_Project
 Pour créé un environement Vagrant il faut taper les commandes suivantes : 
 
 ```bash
-$ vagrant ini <nom_du_vagrant_à_récupérer>
+$ vagrant init <nom_du_vagrant_à_récupérer>
 ```
 Le vagrant init va créé notre vagrant file qui contient toute notre configuration
 
