@@ -15,7 +15,7 @@ for dir in "${directories[@]}"; do
   echo "Se déplaçant vers le répertoire : $dir"
   cd "$dir" || exit 1
   vagrant up
-  wait_for_seconds 5
+  wait_for_seconds 3
 done
 
 # Lancer VirtualBox

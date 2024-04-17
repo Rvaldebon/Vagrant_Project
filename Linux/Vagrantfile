@@ -10,4 +10,12 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.name = "Serveur_DHCP"
   end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get install x11-xkb-utils -y
+    echo 'XKBLAYOUT="fr"' >> /etc/default/keyboard
+    dpkg-reconfigure keyboard-configuration
+    service keyboard-setup restart
+    useradd -p $(openssl passwd -1 'M2I') Memoire
+  SHELL
 end
