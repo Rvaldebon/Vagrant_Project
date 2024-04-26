@@ -46,6 +46,23 @@ Une fois la commande passé vagrant va extraire notre machine virtuelle et la co
 
 La box est alors créé. 
 
+#### Exception sur les machines Linux
+
+Sur les machines Linux il nous faut ajouter la clé ssh officiel de Vagrant. Cette clé permettras de prendre la main en ssh à nos machines via la commande `vagrant ssh`.
+
+```shell
+$ sudo apt-get install linux-headers-$(uname -r) build-essential dkms
+$ sudo mount /dev/cdrom /media/cdrom
+$ sudo sh /media/cdrom/VBoxLinuxAdditions.run
+$ useradd -m -s /bin/bash vagrant
+$ passwd vagrant
+# Mettre vagrant en mot de passe
+$ mkdir /home/vagrant/.ssh
+$ wget -O /home/vagrant/.ssh/authorized_keys  https://github.com/hashicorp/vagrant/raw/master/keys/vagrant.pub
+$ chown -R vagrant:vagrant /home/vagrant/.ssh
+$ chmod 700 /home/vagrant/.ssh
+$ chmod 600 /home/vagrant/.ssh/authorized_keys 
+```
 
 ### Ajouter un provider 
 
@@ -56,3 +73,4 @@ La box est alors créé.
 2. Ensuite sélectionner le provider, ce seras toujours par défaut `Virtualbox`(1), choisir l'architecture de la box par défaut `AMD64`(2) puis récupérer notre box en local. 
 
 3. La box est bien importé dans le cloud
+
