@@ -33,5 +33,15 @@ Le vagrant up va lancer notre script vagrant et l'intégrer sur notre hyperviseu
 
 6. Notre box est prête. 
 
+### Ajouter un provider 
+
+1. Cliquez sur `Add a provider` : 
+
+![](screen/4.png)
+
+2. Ensuite sélectionner le provider, ce seras toujours par défaut `Virtualbox`(1), choisir l'architecture de la box par défaut `AMD64`(2) puis récupérer notre box en local. 
+
+3. La box est bien importé dans le cloud
+
 ### Récupérer une box 
 
