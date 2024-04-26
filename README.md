@@ -33,6 +33,20 @@ Le vagrant up va lancer notre script vagrant et l'intégrer sur notre hyperviseu
 
 6. Notre box est prête. 
 
+### Créer sa box 
+
+1. Tout d'abord créé et installer une machine virtuelle avec tous les outils que l'on souhaite. Une fois la machine terminé l'éteindre et se rendre sur le terminal. 
+
+2. Dans le terminal se rendre dans le repertoire où sont stockée nos machines virtuelles et taper la commande suivante : 
+
+```shell
+$ vagrant package --output <nomdenotrebox.box> --base "<nomdufichier>"
+```
+Une fois la commande passé vagrant va extraire notre machine virtuelle et la compressé dans un fichier. 
+
+La box est alors créé. 
+
+
 ### Ajouter un provider 
 
 1. Cliquez sur `Add a provider` : 
