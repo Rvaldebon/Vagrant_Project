@@ -56,6 +56,3 @@ La box est alors créé.
 2. Ensuite sélectionner le provider, ce seras toujours par défaut `Virtualbox`(1), choisir l'architecture de la box par défaut `AMD64`(2) puis récupérer notre box en local. 
 
 3. La box est bien importé dans le cloud
-
-### Récupérer une box 
-
