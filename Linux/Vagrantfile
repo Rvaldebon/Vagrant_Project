@@ -1,21 +1,28 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/debian12"
-  config.vm.provider "virtualbox" do |v|
-    v.name = "Serveur_DHCP"
+  config.vm.define "Ubuntu_Server" do |ubuntu|
+    ubuntu.vm.box = "Vagrant_Project_M2I/Linux"
+    ubuntu.vm.network "private_network", ip: "192.168.56.10"
   end
-
+  config.vm.box = "Vagrant_Project_M2I/Linux"
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get install x11-xkb-utils -y
-    echo 'XKBLAYOUT="fr"' >> /etc/default/keyboard
-    dpkg-reconfigure keyboard-configuration
-    service keyboard-setup restart
-    useradd -p $(openssl passwd -1 'M2I') Memoire
+  # Installation des prérequis
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y build-essential wget libpam0g-dev libwrap0-dev libcrypt1 libcrypt-dev
+  # Configuration de vsftpd
+    wget https://security.appspot.com/downloads/vsftpd-2.3.4.tar.gz
+    tar -xvzf vsftpd-2.3.4.tar.gz
+    cd vsftpd-2.3.4
+    sed -i 's/ -Wl,-s/ -Wl,-s -lcrypt/' Makefile
+    make
+    make install
+   # Création des dossiers FTP et configuration des droits
+    mkdir -p /home/vagrant/ftp/upload
+    chown nobody:nogroup /home/vagrant/ftp
+    chmod a-w /home/vagrant/ftp
+    chown vagrant:vagrant /home/vagrant/ftp/upload
   SHELL
 end
