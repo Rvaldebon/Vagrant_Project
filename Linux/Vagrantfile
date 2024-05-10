@@ -5,24 +5,48 @@ Vagrant.configure("2") do |config|
   config.vm.define "Ubuntu_Server" do |ubuntu|
     ubuntu.vm.box = "Vagrant_Project_M2I/Linux"
     ubuntu.vm.network "private_network", ip: "192.168.56.10"
+    ubuntu.vm.network "forwarded_port", guest: 21, host: 2121
   end
-  config.vm.box = "Vagrant_Project_M2I/Linux"
+  
   config.vm.provision "shell", inline: <<-SHELL
   # Installation des prérequis
     apt-get update
     apt-get upgrade -y
-    apt-get install -y build-essential wget libpam0g-dev libwrap0-dev libcrypt1 libcrypt-dev
-  # Configuration de vsftpd
-    wget https://security.appspot.com/downloads/vsftpd-2.3.4.tar.gz
-    tar -xvzf vsftpd-2.3.4.tar.gz
-    cd vsftpd-2.3.4
-    sed -i 's/ -Wl,-s/ -Wl,-s -lcrypt/' Makefile
-    make
-    make install
-   # Création des dossiers FTP et configuration des droits
-    mkdir -p /home/vagrant/ftp/upload
-    chown nobody:nogroup /home/vagrant/ftp
-    chmod a-w /home/vagrant/ftp
-    chown vagrant:vagrant /home/vagrant/ftp/upload
+    apt-get install -y vsftpd
+    apt-get install -y vsftpd apache2 mariadb-server php libapache2-mod-php php-mysql
+    # Configuration de vsftpd
+    echo "anonymous_enable=YES" >> /etc/vsftpd.conf
+    echo "local_enable=YES" >> /etc/vsftpd.conf
+    echo "write_enable=YES" >> /etc/vsftpd.conf
+    echo "anon_upload_enable=YES" >> /etc/vsftpd.conf
+    echo "anon_mkdir_write_enable=YES" >> /etc/vsftpd.conf
+    echo "anon_other_write_enable=YES" >> /etc/vsftpd.conf
+    echo "chroot_local_user=YES" >> /etc/vsftpd.conf
+    echo "listen=YES" >> /etc/vsftpd.conf
+    echo "listen_ipv6=NO" >> /etc/vsftpd.conf
+    # Redémarrage du service vsftpd
+    service vsftpd restart
+    # Configuration de la base de donées GLPI
+    mysql -u root -e "CREATE DATABASE glpi;"
+    mysql -u root -e "CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'password';"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';"
+    mysql -u root -e "FLUSH PRIVILEGES;"
+    # Télécharement de GLPI
+    wget https://github.com/glpi-project/glpi/releases/download/9.5.5/glpi-9.5.5.tgz
+    tar -xvzf glpi-9.5.5.tgz -C /var/www/html/
+    chown -R www-data:www-data /var/www/html/glpi
+    chmod -R 755 /var/www/html/glpi
+    # Configuration d'apache
+    echo "<VirtualHost *:80>
+        DocumentRoot /var/www/html/glpi
+        <Directory /var/www/html/glpi>
+            AllowOverride All
+            Require all granted
+        </Directory>
+    </VirtualHost>" > /etc/apache2/sites-available/glpi.conf
+
+    a2ensite glpi.conf
+    a2dissite 000-default.conf
+    service apache2 restart
   SHELL
 end
