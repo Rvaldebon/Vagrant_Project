@@ -6,6 +6,10 @@ Vagrant.configure("2") do |config|
     ubuntu.vm.box = "Vagrant_Project_M2I/Linux"
     ubuntu.vm.network "private_network", ip: "192.168.56.10"
     ubuntu.vm.network "forwarded_port", guest: 21, host: 2121
+
+    ubuntu.vm.provider "virtualbox" do |vb|
+      vb.name = "Ubuntu_Server"
+    end
   end
   
   config.vm.provision "shell", inline: <<-SHELL
@@ -23,7 +27,6 @@ Vagrant.configure("2") do |config|
     echo "anon_other_write_enable=YES" >> /etc/vsftpd.conf
     echo "chroot_local_user=YES" >> /etc/vsftpd.conf
     echo "listen=YES" >> /etc/vsftpd.conf
-    echo "listen_ipv6=NO" >> /etc/vsftpd.conf
     # Redémarrage du service vsftpd
     service vsftpd restart
     # Configuration de la base de donées GLPI
