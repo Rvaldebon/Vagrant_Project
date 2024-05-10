@@ -1,4 +1,4 @@
-- name: Configure role(s) on a Windows server instance
+- name: Config Active directory
   hosts: all
   tasks: 
 
@@ -9,14 +9,15 @@
   hosts: all
   tasks: 
 
-  - name: Run powershell commands to prepare the DC 
+  - name: Run powershell commands to add AD-DS
     ansible.windows.win_powershell:
-      script: |        Add-WindowsFeature AD-Domain-Services
+      script: | 
+        Add-WindowsFeature AD-Domain-Services
         Set-TimeZone -Name "Romance Standard Time"
 
   - name: Change the hostname 
     ansible.windows.win_hostname:
-      name: dc
+      name: DC-01
     register: hostname
   
   - name: Reboot
@@ -24,25 +25,38 @@
     when: hostname.reboot_required
 
   - name: Set up static IP address
-    win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet*' | New-NetIpAddress -IpAddress 10.0.2.100 -PrefixLength 24 -DefaultGateway 10.0.2.2"
+    win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet*' | New-NetIpAddress -IpAddress 192.168.56.11 -PrefixLength 24 -DefaultGateway 192.168.56.100"
     async: 100 # Using "fire-and-forget" asynchronous execution for this task, otherwise it will always fail and timeout
     poll: 0
 
   - name: Wait for the hosts network interface to come back up
-    local_action:
-      module: wait_for
-      host: "{{ ansible_host }}"
-      port: 5985
+    local_action:  # Cela indique qu'il s'agit d'une action locale
+      module: wait_for # C'est le module Ansible utilisé pour attendre qu'une condition soit remplie sur un hôte distant.
+      host: "{{ ansible_host }}" #Hôte sur lequel la vérification est effectuée. {{ ansible_host }} variable fournie par Ansible qui contient l'adresse IP de l'hôte sur lequel le playbook est en cours d'exécution.
+      port: 5985 #Port WinRM
       delay: 10
-      state: started
-    register: wait_result
+      state: started #L'état que le module attend
+    register: wait_result #Enregistre le résultat de la vérification dans une variable 
 
   - name: Install ADDS role and configure it with minimal option
     ansible.windows.win_domain:
-      dns_domain_name: itconnect.local
+      dns_domain_name: poc.local
       safe_mode_password: password123!
     register: domain_install
   
   - name: Reboot after promotion
     ansible.windows.win_reboot:
     when: domain_install.reboot_required
+    
+- name: Add user on domain
+  hosts: DC-01
+  tasks:
+    - name: Ajouter l'utilisateur "law" au domaine
+      win_domain_user:
+        domain_username: "administrator"  # Nom d'utilisateur avec les privilèges pour ajouter des utilisateurs
+        domain_password: "vagrant"  # Mot de passe de l'utilisateur avec les privilèges pour ajouter des utilisateurs
+        name: "law"  # Nom de l'utilisateur à ajouter
+        password: "azerty123!"  # Mot de passe de l'utilisateur à créer
+        state: present  # Pour s'assurer que l'utilisateur existe
+        domain: "poc.local"  # Nom de domaine
+
