@@ -4,15 +4,9 @@ Vagrant.configure("2") do |config|
 
     boxes = [
         { :name => "Ubuntu_Server", :box => "Vagrant_Project_M2I/Linux", :ip => "192.168.56.201", :forwarded_port => 2121 },
-        { :name => "Windows_Server", :box => "Vagrant_Project_M2I/Windows_Serveur", :ip => "192.168.56.200" }
+        { :name => "Windows_Server", :box => "Vagrant_Project_M2I/Windows_Serveur", :ip => "192.168.56.200" },
+        { :name => "Kali_Vagrant", :box => "Vagrant_Project_M2I/Kali", :ip => "192.168.56.10", :forwarded_port => 1234}
     ]
-
-    if ENV.has_key?('VAGRANT_BOX') and ENV['VAGRANT_BOX'].include? "kali"
-        boxes.append(
-            { :name => "Kali_Vagrant", :box => "Vagrant_Project_M2I/Kali", :ip => "192.168.56.10", :forwarded_port => [{:guest => 22, :host => 2210, :id => "ssh"}] 
-            }
-        )
-    end
 
     boxes.each do |box|
         config.vm.define box[:name] do |machines|
