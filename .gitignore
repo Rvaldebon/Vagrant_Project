@@ -1,0 +1,2 @@
+# Ignorer tous les dossiers .vagrant
+*/.vagrant/
