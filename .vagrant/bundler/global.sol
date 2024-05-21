@@ -1,0 +1,1 @@
+{"dependencies":[["vagrant-guest_ansible",["= 0.0.4"]],["vagrant-reload",["= 0.0.1"]],["log4r",[">= 0"]],["concurrent-ruby",["~> 1.0"]],["i18n",[">= 0"]],["micromachine",[">= 2","< 4"]],["vagrant-vbguest",["= 0.32.0"]],["vagrant-winrm-file-download",["= 0.0.1"]]],"checksum":"c73d8d453079ed6e8ec725ca9ac8f9a850acbb32a085b65cbb04caffa588c029","vagrant_version":"2.4.1"}

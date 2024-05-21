@@ -1,0 +1,19 @@
+# playbook.yml
+---
+- name: Configure Windows Server
+  hosts: all
+  tasks:
+    - name: Ensure IIS is installed
+      win_feature:
+        name: Web-Server
+        state: present
+
+    - name: Create a directory
+      win_file:
+        path: C:\inetpub\wwwroot\my_site
+        state: directory
+
+    - name: Create an index.html file
+      win_copy:
+        content: "<h1>Hello, World!</h1>"
+        dest: C:\inetpub\wwwroot\my_site\index.html

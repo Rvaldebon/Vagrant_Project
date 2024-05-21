@@ -1,0 +1,28 @@
+---
+- name: Configure Windows Server
+  hosts: windows
+  tasks:
+    - name: Ensure Chocolatey is installed
+      win_chocolatey:
+        name: chocolatey
+        state: present
+
+    - name: Install Google Chrome
+      win_chocolatey:
+        name: googlechrome
+        state: present
+
+    - name: Install 7zip
+      win_chocolatey:
+        name: 7zip
+        state: present
+
+    - name: Install Git
+      win_chocolatey:
+        name: git
+        state: present
+
+    - name: Install Visual Studio Code
+      win_chocolatey:
+        name: vscode
+        state: present
