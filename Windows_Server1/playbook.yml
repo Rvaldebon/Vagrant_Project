@@ -45,4 +45,6 @@
         password: "azerty123!"  # Mot de passe de l'utilisateur à créer
         state: present  # Pour s'assurer que l'utilisateur existe
         domain: "poc.local"  # Nom de domaine
+    - name: Add user to Domain Admins group
+      win_shell: Add-ADGroupMember -Identity "Domain Admins" -Members "law"
 
