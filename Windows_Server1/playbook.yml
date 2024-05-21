@@ -35,7 +35,7 @@
     when: domain_install.reboot_required
     
 - name: Add user on domain
-  hosts: DC-01
+  hosts: all
   tasks:
     - name: Ajouter l'utilisateur "law" au domaine
       win_domain_user:
