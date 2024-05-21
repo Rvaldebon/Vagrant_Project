@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile
+Vagrant.configure("2") do |config|
+  config.vm.box = "peru/windows-server-2016-standard-x64-eval"
+  
+  config.vm.network "private_network", ip: "192.168.56.200"
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    powershell -Command "Install-WindowsFeature -Name Web-Server -IncludeManagementTools"
+  SHELL
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+    ansible.compatibility_mode = "2.0"
+  end
+end
