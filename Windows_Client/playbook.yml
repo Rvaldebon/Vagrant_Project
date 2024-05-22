@@ -9,7 +9,7 @@
   hosts: all
   tasks: 
 
-  - name: Ajout du rôle AD-DS
+  - name: Run powershell commands to add AD-DS
     ansible.windows.win_powershell:
       script: | 
         Add-WindowsFeature AD-Domain-Services
