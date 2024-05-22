@@ -9,13 +9,18 @@
   hosts: all
   tasks: 
 
+  - name: Modification du clavier en français
+    ansible.windows.win_powershell:
+      script: |
+        Set-WinUserLanguageList fr-FR -Force
+
   - name: Ajout du rôle AD-DS
     ansible.windows.win_powershell:
       script: | 
         Add-WindowsFeature AD-Domain-Services
         Set-TimeZone -Name "Romance Standard Time"
 
-  - name: Change the hostname 
+  - name: Ajout du nom d'hôte 
     ansible.windows.win_hostname:
       name: DC-01
     register: hostname
@@ -24,10 +29,10 @@
     ansible.windows.win_reboot:
     when: hostname.reboot_required
 
-  - name: Install ADDS role and configure it with minimal option
+  - name: Installation du domaine
     ansible.windows.win_domain:
       dns_domain_name: poc.local
-      safe_mode_password: password123!
+      safe_mode_password: Vagrant!2024
     register: domain_install
   
   - name: Reboot after promotion
@@ -39,12 +44,13 @@
   tasks:
     - name: Ajouter l'utilisateur "law" au domaine
       win_domain_user:
-        domain_username: "administrator"  # Nom d'utilisateur avec les privilèges pour ajouter des utilisateurs
-        domain_password: "vagrant"  # Mot de passe de l'utilisateur avec les privilèges pour ajouter des utilisateurs
-        name: "law"  # Nom de l'utilisateur à ajouter
-        password: "azerty123!"  # Mot de passe de l'utilisateur à créer
-        state: present  # Pour s'assurer que l'utilisateur existe
-        domain: "poc.local"  # Nom de domaine
+        domain_username: "administrator"
+        domain_password: "vagrant"
+        name: "law"
+        password: "azerty123!"
+        state: present 
+        domain: "poc.local"
     - name: Add user to Domain Admins group
       win_shell: Add-ADGroupMember -Identity "Domain Admins" -Members "law"
+      
 

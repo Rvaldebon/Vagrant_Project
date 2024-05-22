@@ -8,7 +8,7 @@ wait_for_seconds() {
 }
 
 # Répertoires où exécuter "vagrant up"
-directories=("./Linux" "../Windows_Client" "../Windows_Server")
+directories=("./Linux" "../Windows_Client" "../Windows_Server" "../Kali")
 
 # Exécuter "vagrant up" dans chaque répertoire et attendre 5 secondes
 for dir in "${directories[@]}"; do
