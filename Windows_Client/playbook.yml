@@ -8,14 +8,14 @@
     ansible_winrm_transport: 'ntlm'
     ansible_winrm_scheme: 'http'
     domain_admin_user: "administrator"
-    domain_admin_password: "vagrant"  # Remplacez par le mot de passe correct
+    domain_admin_password: "vagrant"
   tasks:
     - name: Configurer le serveur DNS
       ansible.windows.win_dns_client:
         adapter_names: 
           - "Ethernet"
         ipv4_addresses: 
-          - "192.168.56.12"  # Remplacez par l'adresse IP de votre serveur DNS
+          - "192.168.56.12"
 
     - name: Attendre que les paramètres DNS soient appliqués
       pause:
