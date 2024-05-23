@@ -38,7 +38,7 @@
   - name: Reboot after promotion
     ansible.windows.win_reboot:
     when: domain_install.reboot_required
-    
+
 - name: Add user on domain
   hosts: all
   tasks:

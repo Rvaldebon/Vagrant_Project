@@ -1,0 +1,30 @@
+---
+- name: Ajout du poste client au domaine
+  hosts: all
+  vars:
+    ansible_winrm_server_cert_validation: 'ignore'
+    ansible_connection: 'winrm'
+    ansible_port: '55985'
+    ansible_winrm_transport: 'ntlm'
+    ansible_winrm_scheme: 'http'
+    domain_admin_user: "administrator"
+    domain_admin_password: "vagrant"  # Remplacez par le mot de passe correct
+  tasks:
+    - name: Configurer le serveur DNS
+      ansible.windows.win_dns_client:
+        adapter_names: 
+          - "Ethernet"
+        ipv4_addresses: 
+          - "192.168.56.12"  # Remplacez par l'adresse IP de votre serveur DNS
+
+    - name: Attendre que les paramètres DNS soient appliqués
+      pause:
+        seconds: 10
+
+    - name: Ajout du poste client au domaine
+      ansible.windows.win_domain_membership:
+        dns_domain_name: poc.local
+        domain_admin_user: "administrator"
+        domain_admin_password: "vagrant"
+        state: domain
+        reboot: yes

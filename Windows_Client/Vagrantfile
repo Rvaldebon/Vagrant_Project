@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "peru/windows-server-2016-standard-x64-eval"
-  config.vm.network "private_network", ip: "192.168.56.12"
+  config.vm.box = "gusztavvargadr/windows-10"
+  config.vm.network "private_network", ip: "192.168.56.13"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "6024"
     vb.cpus = 4
