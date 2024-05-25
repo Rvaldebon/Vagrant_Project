@@ -1,6 +1,7 @@
 ---
-- name: Ajout du poste client au domaine
+- name: Ajout du client au domaine
   hosts: all
+  gather_facts: false
   vars:
     ansible_winrm_server_cert_validation: 'ignore'
     ansible_connection: 'winrm'
@@ -9,22 +10,36 @@
     ansible_winrm_scheme: 'http'
     domain_admin_user: "administrator"
     domain_admin_password: "vagrant"
+
   tasks:
-    - name: Configurer le serveur DNS
-      ansible.windows.win_dns_client:
-        adapter_names: 
-          - "Ethernet"
-        ipv4_addresses: 
-          - "192.168.56.12"
 
-    - name: Attendre que les paramètres DNS soient appliqués
-      pause:
-        seconds: 10
+  - name: Ajout du DNS
+    win_dns_client:
+      adapter_names: '*'
+      ipv4_addresses: '192.168.56.12'
+    register: dns_result
 
-    - name: Ajout du poste client au domaine
-      ansible.windows.win_domain_membership:
-        dns_domain_name: poc.local
-        domain_admin_user: "administrator"
-        domain_admin_password: "vagrant"
-        state: domain
-        reboot: yes
+  - name: Afficher le résultat du DNS
+    debug:
+      var: dns_result
+
+  - name: Reboot si nécessaire après ajout DNS
+    win_reboot:
+    when: dns_result is changed
+
+  - name: Promouvoir le client
+    win_domain_membership:
+      dns_domain_name: 'poc.local'
+      domain_admin_user: 'Administrator@poc.local'
+      domain_admin_password: 'vagrant'
+      state: domain
+    register: domain_state
+
+  - name: Afficher le résultat de l'ajout au domaine
+    debug:
+      var: domain_state
+
+  - name: Reboot après ajout au domaine
+    win_reboot:
+      msg: "Rebooting to complete domain join"
+    when: domain_state.reboot_required
