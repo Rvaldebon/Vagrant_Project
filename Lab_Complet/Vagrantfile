@@ -1,0 +1,71 @@
+Vagrant.configure("2") do |config|
+
+    ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+
+    boxes = [
+        { :name => "Ubuntu-Server", :ip => "192.168.56.10", :box => "Vagrant_Project_M2I/Linux", :memory => "4096", :cpus => 2, :usb => "off", :os => "linux", :forwarded_port => { :guest => 21, :host => 2121 } },
+        { :name => "Kali", :ip => "192.168.56.11", :box => "Vagrant_Project_M2I/Kali", :memory => "4096", :cpus => 2, :usb => "off", :os => "linux" },
+        { :name => "Windows-Server", :ip => "192.168.56.12", :box => "peru/windows-server-2016-standard-x64-eval", :memory => "6024", :cpus => 4, :usb => "off", :os => "windows" },
+        { :name => "Windows-10", :ip => "192.168.56.13", :box => "gustavvargadr/windows-10", :memory => "6024", :cpus => 4, :usb => "off", :os => "windows" }
+    ]
+
+    boxes.each do |box|
+        config.vm.define box[:name] do |machine|
+            machine.vm.box = box[:box]
+            machine.vm.network "private_network", ip: box[:ip]
+        config.vm.provider "virtualbox" do |v|
+            v.memory = box[:memory]
+            v.cpus = box[:cpus]
+            v.customize ["modifyvm", :id, "--usb", box[:usb]]
+        end
+
+            if box[:forwarded_port]
+                machine.vm.network "forwarded_port", guest: box[:forwarded_port][:guest], host: box[:forwarded_port][:host]
+            end
+        end
+    end
+
+    config.vm.define "Ubuntu-Server" do |ubuntu|
+        ubuntu.vm.provision "shell", inline: <<-SHELL
+            Installation des prérequis
+            apt-get update
+            apt-get upgrade -y
+            apt-get install -y vsftpd
+            apt-get install -y vsftpd apache2 mariadb-server php libapache2-mod-php php-mysql
+            # Configuration de vsftpd
+            echo "anonymous_enable=YES" >> /etc/vsftpd.conf
+            echo "local_enable=YES" >> /etc/vsftpd.conf
+            echo "write_enable=YES" >> /etc/vsftpd.conf
+            echo "anon_upload_enable=YES" >> /etc/vsftpd.conf
+            echo "anon_mkdir_write_enable=YES" >> /etc/vsftpd.conf
+            echo "anon_other_write_enable=YES" >> /etc/vsftpd.conf
+            echo "chroot_local_user=YES" >> /etc/vsftpd.conf
+            echo "listen=YES" >> /etc/vsftpd.conf
+            # Redémarrage du service vsftpd
+            service vsftpd restart
+            # Configuration de la base de donées GLPI
+            mysql -u root -e "CREATE DATABASE glpi;"
+            mysql -u root -e "CREATE USER 'glpi'@'localhost' IDENTIFIED BY 'password';"
+            mysql -u root -e "GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';"
+            mysql -u root -e "FLUSH PRIVILEGES;"
+            # Télécharement de GLPI
+            wget https://github.com/glpi-project/glpi/releases/download/9.5.5/glpi-9.5.5.tgz
+            tar -xvzf glpi-9.5.5.tgz -C /var/www/html/
+            chown -R www-data:www-data /var/www/html/glpi
+            chmod -R 755 /var/www/html/glpi
+            # Configuration d'apache
+            echo "<VirtualHost *:80>
+                    DocumentRoot /var/www/html/glpi
+                    <Directory /var/www/html/glpi>
+                            AllowOverride All
+                            Require all granted
+                    </Directory>
+            </VirtualHost>" > /etc/apache2/sites-available/glpi.conf
+
+            a2ensite glpi.conf
+            a2dissite 000-default.conf
+            service apache2 restart
+        SHELL
+    end
+
+end
