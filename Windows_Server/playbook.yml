@@ -5,6 +5,8 @@
   - name: Run powershell commands to prepare the DC 
     ansible.windows.win_powershell:
       script: |
+        # Your PowerShell script here
+
 - name: Configure role(s) on a Windows server instance
   hosts: all
   tasks: 
@@ -52,5 +54,3 @@
         domain: "poc.local"
     - name: Add user to Domain Admins group
       win_shell: Add-ADGroupMember -Identity "Domain Admins" -Members "law"
-      
-
