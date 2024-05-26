@@ -51,6 +51,6 @@
         name: "law"
         password: "azerty123!"
         state: present 
-        domain: "poc.local"
+        domain_server: "poc.local"
     - name: Add user to Domain Admins group
       win_shell: Add-ADGroupMember -Identity "Domain Admins" -Members "law"
