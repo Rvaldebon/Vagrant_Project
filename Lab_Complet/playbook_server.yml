@@ -41,7 +41,19 @@
     ansible.windows.win_reboot:
     when: domain_install.reboot_required
 
-- name: Add user on domain
+  - name: Création du goupe PocAdmin
+    ansible.windows.win_group:
+      name: PocAdmin
+      description: PocAdmin Users
+      state: present
+
+  - name: Création du goupe PocUtilisateur
+    ansible.windows.win_group:
+      name: PocUsers
+      description: Poc users
+      state: present
+
+- name: Ajout des utilisateurs au domaine
   hosts: all
   tasks:
     - name: Ajouter l'utilisateur "law" au domaine
@@ -52,5 +64,22 @@
         password: "azerty123!"
         state: present 
         domain_server: "poc.local"
-    - name: Add user to Domain Admins group
-      win_shell: Add-ADGroupMember -Identity "Domain Admins" -Members "law"
+    - name: Ajout de l'utilisateur "travis" au domaine
+      win_domain_user:
+        name: "travis"
+        password: "3CAn5F@2024"
+        state: present
+        domain_server: "poc.local"
+    - name: Ajout de l'utilisateur "tyson" au domaine
+      win_domain_user:
+        name: "tyson"
+        password: "M&UYNr2024!"
+        state: present
+        domain_server: "poc.local"
+    - name: Add users to PocUsers group
+      win_shell: |
+        Add-ADGroupMember -Identity "PocUsers" -Members "travis"
+        Add-ADGroupMember -Identity "PocUsers" -Members "tyson"
+        Add-ADGroupMember -Identity "PocAdmin" -Members "law"
+                 
+
