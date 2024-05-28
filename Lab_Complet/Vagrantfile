@@ -77,6 +77,11 @@ Vagrant.configure("2") do |config|
     end
 
     config.vm.define "Windows-Server" do |winsrv|
+        winsrv.vm.provision "shell", inline: <<-SHELL
+            Set-WinUserLanguageList -LanguageList fr-FR -Force
+            New-Item -ItemType Directory -Path "C:\\Shared_Folder"
+            New-SmbShare -Name "Shared_Folder" -Path "C:\\Shared_Folder" -FullAccess "Everyone"
+        SHELL
         winsrv.vm.provision "ansible" do |ansible|
             ansible.playbook = "playbook_server.yml"
             ansible.compatibility_mode = "2.0"
